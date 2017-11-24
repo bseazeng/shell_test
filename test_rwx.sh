@@ -1,0 +1,43 @@
+#!/bin/bash
+
+MODIFY_FILE_NAME=./test_rwx.txt
+FILE_RWX_VALUE=755
+FILE_RWX_VALUE_OLD=""
+
+#修改文件权限为FILE_RWX_VALUE
+if [ -f ${MODIFY_FILE_NAME} ];then
+    FILE_RWX_VALUE_OLD=`ls -l ${MODIFY_FILE_NAME} | awk '{print $1}'`
+	chmod ${FILE_RWX_VALUE} ${MODIFY_FILE_NAME} -v
+fi
+
+#还原文件权限
+FILE_RWX_VALUE_LEN=${#FILE_RWX_VALUE_OLD}
+if [ "10" = "${FILE_RWX_VALUE_LEN}" ];then
+    FILE_RWX_USR=${FILE_RWX_VALUE_OLD:0:4}
+	FILE_RWX_USR=${FILE_RWX_USR:1:3}
+	FILE_RWX_USR=${FILE_RWX_USR//-/}
+	FILE_RWX_USR_LEN=${#FILE_RWX_USR}
+	
+	chmod u-rwx ${MODIFY_FILE_NAME} -v
+	if [ "0" != ${FILE_RWX_USR_LEN} ];then
+	    chmod ${FILE_RWX_USR} ${MODIFY_FILE_NAME} -v
+	fi
+	
+	FILE_RWX_GROUP=${FILE_RWX_VALUE_OLD:4:3}
+	FILE_RWX_GROUP=${FILE_RWX_GROUP//-/}
+	FILE_RWX_GROUP_LEN=${#FILE_RWX_GROUP}
+	
+	chmod g-rwx ${MODIFY_FILE_NAME} -v
+	if [ "0" != ${FILE_RWX_GROUP_LEN} ];then
+	    chmod ${FILE_RWX_GROUP} ${MODIFY_FILE_NAME} -v
+	fi
+	
+	FILE_RWX_OTHER=${FILE_RWX_VALUE_OLD:7:3}
+	FILE_RWX_OTHER=${FILE_RWX_OTHER//-/}
+	FILE_RWX_OTHER_LEN=${#FILE_RWX_OTHER}
+	
+	chmod o-rwx ${MODIFY_FILE_NAME} -v
+	if [ "0" != ${FILE_RWX_OTHER_LEN} ];then
+	    chmod ${FILE_RWX_OTHER} ${MODIFY_FILE_NAME} -v
+	fi
+fi
